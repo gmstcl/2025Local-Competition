@@ -74,14 +74,12 @@ func fetchItemHandler(w http.ResponseWriter, r *http.Request) {
                 return
         }
 
-        // Read the body content
         body, err := io.ReadAll(resp.Body)
         if err != nil {
                 http.Error(w, fmt.Sprintf("Failed to read response body: %s", err), http.StatusInternalServerError)
                 return
         }
 
-        // Unmarshal the JSON response into Item
         var item Item
         err = json.Unmarshal(body, &item)
         if err != nil {
@@ -89,17 +87,25 @@ func fetchItemHandler(w http.ResponseWriter, r *http.Request) {
                 return
         }
 
-        // Return the item as JSON
         w.Header().Set("Content-Type", "application/json")
         json.NewEncoder(w).Encode(item)
 }
 
+func healthcheckHandler(w http.ResponseWriter, r *http.Request) {
+        w.Header().Set("Content-Type", "application/json")
+        w.WriteHeader(http.StatusOK)
+        json.NewEncoder(w).Encode(map[string]string{
+                "status": "OK",
+        })
+}
+
 func main() {
         http.HandleFunc("/fetch-item", fetchItemHandler)
+        http.HandleFunc("/healthcheck", healthcheckHandler)
 
         port := os.Getenv("PORT")
         if port == "" {
-                port = "8081"
+                port = "8080"
         }
         log.Printf("Cloud Map Client running on port %s", port)
         log.Fatal(http.ListenAndServe(":"+port, nil))
