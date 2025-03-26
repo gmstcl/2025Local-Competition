@@ -1,7 +1,7 @@
 FROM golang
 
-COPY main .
-RUN chmod +x main
+COPY call .
+RUN chmod +x call
 ENV REGION=ap-northeast-2
 ENV CLOUDMAP_SERVICE_NAME=ecs
-CMD ["./main"]
+CMD ["./call"]
